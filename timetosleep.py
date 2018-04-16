@@ -21,14 +21,12 @@ offset = 0 if len(sys.argv) < 2 else int(sys.argv[1])
 event = 'sunset' if len(sys.argv) < 3 else sys.argv[2]
 
 ## API call to json ##
-r = requests.get(url=api_url)
-json_data = r.json()
-del(r)
+json_data = requests.get(url=api_url).json()
 # print([s for s in json_data['results']])
 
 ## Time difference ##
 cur_time = datetime.now(tz=TIMEZONE_AMS)
-sns_time = parser.parse(json_data['results'][event]) + timedelta(minutes=offset)
+sns_time = parser.parse(json_data['results'][event])
 unt_time = sns_time + timedelta(minutes=offset)
 dif_time = unt_time-cur_time
 
