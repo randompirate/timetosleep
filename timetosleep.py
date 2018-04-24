@@ -10,6 +10,7 @@ import requests
 # Cmd args:
 #    offset in minutes (pos or neg intger)
 #    event 'sunset', 'sunrise', 'midnight'
+#    debug flag (anything)
 
 ## Constants ##
 ams = pytz.timezone('Europe/Amsterdam')
@@ -19,6 +20,7 @@ api_url = 'https://api.sunrise-sunset.org/json?lat={}&lng={}&formatted=0'.format
 ## Command line args ##
 offset = 0 if len(sys.argv) < 2 else int(sys.argv[1])
 event = 'sunset' if len(sys.argv) < 3 else sys.argv[2]
+debug = False if len(sys.argv) < 4 else True
 
 ## API call to json ##
 if event in ['sunset', 'sunrise']:
@@ -26,13 +28,19 @@ if event in ['sunset', 'sunrise']:
 # print([s for s in json_data['results']])
 
 ## Time difference ##
-cur_time = ams.localize(datetime.datetime.now())
+cur_time = datetime.datetime.now(tz=ams)
 if event == 'midnight':
   sns_time = ams.localize(datetime.datetime(cur_time.year, cur_time.month, cur_time.day, 23, 59, 59))
 else:
   sns_time = parser.parse(json_data['results'][event])
 unt_time = sns_time + datetime.timedelta(minutes=offset)
 dif_time = unt_time-cur_time
+
+if debug:
+  print('cur_time: {}'.format(cur_time))
+  print('sns_time: {}'.format(sns_time))
+  print('unt_time: {}'.format(unt_time))
+  print('dif_time: {}'.format(dif_time))
 
 # print status
 # print('Current time : {}'.format(cur_time))
